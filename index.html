@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>経県値</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<link rel="stylesheet" href="lib/uikit-2.10.0/css/uikit.almost-flat.min.css" />
+	<link rel="stylesheet" href="app.css" />
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="lib/uikit-2.10.0/js/uikit.min.js"></script>
+
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="http://d3js.org/topojson.v0.min.js"></script>
+</head>
+
+<body>
+	<nav class="uk-navbar" id="navbar">
+		<a href="" id="title">経県値</a>
+		<div id="navbar-center" class="uk-navbar-center">
+			<span id="navbar-score">102</span>点
+		</div>
+		<div id="navbar-right">
+			<a href="#offcanvas" class="uk-navbar-toggle" id="navbar-toggle" data-uk-offcanvas></a>
+		</div>	
+	</nav>
+
+	<div id="offcanvas" class="uk-offcanvas">
+		<div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+			<table id="prefectures">		
+				<tr>
+					<th class="name">京都府</th>
+					<td class="zero"></td>
+					<td class="one"></td>
+					<td class="two"></td>
+					<td class="three select"></td>
+					<td class="four"></td>
+					<td class="five"></td>
+				</tr>
+				<tr>
+					<th class="name">和歌山県</th>
+					<td class="zero select"></td>
+					<td class="one"></td>
+					<td class="two"></td>
+					<td class="three"></td>
+					<td class="four"></td>
+					<td class="five"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="map"></div>
+
+	<div id="info-button">
+		<a href="#info" class="uk-icon-info-circle" data-uk-modal></a>
+	</div>
+
+	<div id="info" class="uk-modal">
+		<div class="uk-modal-dialog">
+			<a class="uk-modal-close uk-close"></a>
+			経県値とは...
+			<ul>
+				<li>居住　6点</li>
+				<li>宿泊　5点</li>
+				<li></li>
+			</il>
+		</div>
+	</div>
+
+
+
+	<script>
+	$(function(){
+		var width = $("#map").width(),
+			height = $("#map").height(),
+			scale = 1000 * Math.min(width/320, height/450),
+			centered;
+
+		//make field
+		var svg = d3.select("#map").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+		//make background rectangle
+		svg.append("rect")
+			.attr("class", "background")
+			.attr("width", width)
+			.attr("height", height)
+			.on("click", click);
+
+		//make groupe
+		var g = svg.append("g")
+			.attr("id", "japan");
+
+		//setting
+		var projection = d3.geo.mercator()
+			.scale(scale)
+			.center([136.678,35.95])
+			.translate([width / 2, height / 2]);
+
+
+		var path = d3.geo.path()
+		.projection(projection);
+
+		d3.json("japan.json", function(error, japan) {
+			g.selectAll(".japan")
+			.data(topojson.object(japan, japan.objects.japan).geometries)
+			.enter().append("path")
+			.attr("class", "japan")
+			.attr("id", function(d) { return d.id; })
+			.attr("d", path)
+			.on("click", click);
+		});
+
+		//clickされたpathにfocus
+		function click(d) {
+			var x, y, k;
+
+			if ( d && centered !== d ) {
+				var centroid = path.centroid(d);
+				x = centroid[0];
+				y = centroid[1];
+				k = 3;
+				centered = d;
+				$("#japan").append( $("#" + d.id).remove() );
+			}else{
+				x = width / 2;
+				y = height / 2;
+				k = 1;
+				centered = null;
+			}
+
+			g.selectAll("path")
+				.classed("active", centered && function(d) { return d === centered; });
+
+			g.transition()
+				.duration(1000)
+				.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+				.style("stroke-width", 0.5 / k + "px");
+
+			if ( g.select("#popup") ){
+				g.selectAll("#popup").remove();
+			}
+
+			if ( centered ){
+				var bound = path.bounds(d);
+				popup(x, bound[0][1]);
+			}
+		}
+
+
+		function popup(x,y){
+			var popup = g.append("g")
+				.attr({ id: "popup" });
+				
+			popup.append("polygon")
+				.attr({
+					points: "0,0 60,0 60,30 33,30 30,34 27,30 0,30",
+					id: "popup-polygon"
+				});
+
+			var boxes = [
+				{ x:0, 	y:20, class: "zero select" },  
+				{ x:10, y:20, class: "one" },
+				{ x:20, y:20, class: "two" },
+				{ x:30, y:20, class: "three" },
+				{ x:40, y:20, class: "four" },
+				{ x:50, y:20, class: "five" }
+			];
+
+			for ( var i = 0; i < boxes.length; i++ ){
+				popup.append("rect")
+					.attr({
+						height: 10,
+						width: 10,
+						x: boxes[i].x,
+						y: boxes[i].y,
+						class: boxes[i].class
+					});
+			}
+
+				console.log( g.selectAll(".active").attr("id") );
+
+			popup.append("text")
+				.text( g.select(".active").attr("id") )
+				.attr({
+					x: 10,
+					y: 17,
+					fill: "#555",
+					"font-size": 10,
+					"font-weight": "bolder"
+				});
+
+			popup.attr({
+				transform: "translate(" + (x-30) + "," + (y-30) + ")"
+			});
+
+		}
+
+
+	});
+	</script>
+
+
+</body>
+</html>

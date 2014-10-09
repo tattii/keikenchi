@@ -1,0 +1,169 @@
+body {
+	margin:0; padding:0;
+	font-family:'Lato', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3';
+}
+#map {
+	position:absolute;
+	top:52px; bottom:0;
+	width:100%;
+}
+
+
+
+/* map by d3.js  */
+.background {
+	fill: #e4f0fc;
+	pointer-events: all;
+}
+
+#japan {
+	fill: #fff;
+	stroke: #aaa;
+	stroke-width: 0.5px;
+}
+
+
+#japan .active {
+	stroke: orange;
+	stroke-width: 0.5px;
+}
+
+
+/* navbar */
+#navbar {
+	background: #0074bf;
+	border-radius: 0;
+	height: 50px;
+}
+
+#title {
+	position: absolute;
+	font-size: 22px;
+	color: #fff;
+	text-shadow: none;
+	text-decoration: none;
+	padding: 14px;
+}
+
+#navbar-center {
+	position: absolute;
+	left: 50%; top: 16px;
+	margin-left: -30px;
+	height: 20px;
+	color: #fff;
+	font-size: 14px;
+}
+
+#navbar-center:hover {
+	opacity: 0.8;
+	cursor: pointer;
+}
+
+#navbar-score {
+	font-size: 18px;
+	padding-right: 0.3em;
+}
+
+
+#navbar-right {
+	position: absolute;
+	top: 10px; right: 10px;
+}
+
+#navbar-toggle {
+	color: #fff;
+	text-shadow: none;
+}
+
+
+/* prefecture table */
+#prefectures {
+	border-collapse: collapse;
+}
+
+#prefectures tr {
+	height: 45px;
+	border-bottom: 1px solid #000;
+}
+
+#prefectures .name {
+	width: 150px;
+	padding-left: 10px;
+	color: #ccc;
+	font-weight: normal;
+	text-align: left;
+}
+
+
+#prefectures td {
+	width: 20px;
+	opacity: 0.5;
+}
+
+#prefectures td:hover, #prefectures td.select {
+	opacity: 1.0;
+}
+
+
+
+/* 6 colors */
+.zero  { background: #ffffff; fill: #ffffff; }
+.one   { background: #65ace4; fill: #65ace4; }
+.two   { background: #a0c238; fill: #a0c238; }
+.three { background: #fff001; fill: #fff001; }
+.four  { background: #cc528b; fill: #cc528b; }
+.five  { background: #9460a0; fill: #9460a0; }
+
+
+
+
+#Wakayama {
+	fill: #65ace4;
+}
+
+#Kyoto {
+	fill: #9460a0;
+}
+
+#Osaka {
+	fill: #a0c238;
+}
+
+#Shiga {
+	fill: #cc528b;
+}
+
+#Nara {
+	fill: #fff001;
+}
+#Okinawa {
+	fill: #9460a0;
+}
+
+
+/* info button */
+#info-button {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	z-index: 10;
+}
+
+#info-button a {
+	font-size: 200%;
+	color: #666;
+	text-decoration: none;
+}
+
+
+
+/* popup */
+#popup rect {
+	opacity: 0.6;
+}
+
+#popup rect:hover, #popup rect.select {
+	opacity: 1;
+}
+
+
