@@ -18,7 +18,7 @@
 	<nav class="uk-navbar" id="navbar">
 		<a href="" id="title">経県値</a>
 		<div id="navbar-center" class="uk-navbar-center">
-			<span id="navbar-score">102</span>点
+			<span id="navbar-score">0</span>点
 		</div>
 		<div id="navbar-right">
 			<a href="#offcanvas" class="uk-navbar-toggle" id="navbar-toggle" data-uk-offcanvas></a>
@@ -139,39 +139,39 @@
 
 		function popup(x,y){
 			var popup = g.append("g")
-				.attr({ id: "popup" });
+			.attr({ id: "popup" });
 
 			popup.append("polygon")
-				.attr({
-					points: "0,0 60,0 60,30 33,30 30,34 27,30 0,30",
-					id: "popup-polygon"
-				});
+			.attr({
+				points: "0,0 60,0 60,30 33,30 30,34 27,30 0,30",
+				id: "popup-polygon"
+			});
 
 			var prefID = g.select(".active").attr("id");
 
 			var boxes = [
-				{ x:0, 	y:20, class: "zero" },  
-				{ x:10, y:20, class: "one" },
-				{ x:20, y:20, class: "two" },
-				{ x:30, y:20, class: "three" },
-				{ x:40, y:20, class: "four" },
-				{ x:50, y:20, class: "five" }
+			{ x:0, 	y:20, class: "zero" },  
+			{ x:10, y:20, class: "one" },
+			{ x:20, y:20, class: "two" },
+			{ x:30, y:20, class: "three" },
+			{ x:40, y:20, class: "four" },
+			{ x:50, y:20, class: "five" }
 			];
 
 			for ( var i = 0; i < boxes.length; i++ ){
 				popup.append("rect")
-					.attr({
-						height: 10,
-						width: 10,
-						x: boxes[i].x,
+				.attr({
+					height: 10,
+					width: 10,
+					x: boxes[i].x,
 						y: boxes[i].y,
 						class: boxes[i].class,
 					})
 					.on("click", function(d){
 						d3.selectAll("#popup rect").classed("select", false);
-						d3.select("path#" + prefID).attr("class", d3.select(this).attr("class") + " active");
+						update(prefID, d3.select(this).attr("class"));
+						d3.select("path#" + prefID).classed("active", true);
 						d3.select(this).classed("select", true);
-						pref[prefID].value = 3;
 					});
 			}
 
@@ -192,7 +192,7 @@
 			var minusY = (prefID == "Hokkaido") ? 15 : 30;
 			popup.attr({
 				transform: "translate(" + (x-30) + "," + (y-minusY) + ")"
-			});
+				});
 		}
 
 		
@@ -200,6 +200,7 @@
 			var prefArray = new Array(47);
 
 			for ( key in pref ){
+				pref[key].value = 0;
 				prefArray[ pref[key].code - 1 ] = {
 					id: key,
 					name: pref[key].name
@@ -225,6 +226,50 @@
 				);
 			}
 
+		}
+
+
+		$("#prefectures td").click(function(){
+			$(this).parent().children().removeClass("select");
+			var rank = $(this).attr("class");
+			var prefID = $(this).parent().attr("id");
+			update(prefID, rank);
+		});
+
+
+
+
+
+		function update(prefID, rank){
+
+			d3.select("path#" + prefID).attr("class", rank);
+
+			$("#" + prefID + " td").removeClass("select");
+			$("#" + prefID + " td." + rank).addClass("select");
+
+
+			pref[prefID].value = rankNumber(rank);
+
+			var score = 0;
+			for ( key in pref ){
+				score += pref[key].value;
+			}
+			$("#navbar-score").text(score);
+		}
+
+
+
+		function rankNumber(string) {
+			var rank = {
+				zero: 0,
+				one: 1,
+				two: 2,
+				three: 3,
+				four: 4,
+				five: 5
+			};
+
+			return rank[string];
 		}
 
 
