@@ -79,10 +79,35 @@ body {
 	background: #fff;
 }
 
+.uk-offcanvas-bar:after {
+	box-shadow: none;
+	background: none;
+}
+
+.uk-offcanvas-bar {
+	box-shadow: 7px 0 5px -5px rgba(0,0,0,0.4) inset;
+}
+
+#reset {
+	width: 270px; height: 33px;
+	text-align: center;
+	padding-top: 12px;
+	background: #c0392b;
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	opacity: 0.8;
+}
+
+#reset:hover {
+	opacity: 0.6;
+}
+
 
 /* prefecture table */
 #prefectures {
 	border-collapse: collapse;
+	border-top: 1px solid #ccc;
 }
 
 #prefectures tr {
@@ -102,48 +127,24 @@ body {
 
 #prefectures td {
 	width: 20px;
-	opacity: 0.5;
+	opacity: 0.4;
 }
 
 #prefectures td:hover, #prefectures td.select {
-	opacity: 0.8;
+	opacity: 1;
 }
 
 
 
 /* 6 colors */
 .zero  { background: #ffffff; fill: #ffffff; }
-.one   { background: #65ace4; fill: #65ace4; }
-.two   { background: #a0c238; fill: #a0c238; }
-.three { background: #fff001; fill: #fff001; }
-.four  { background: #cc528b; fill: #cc528b; }
-.five  { background: #9460a0; fill: #9460a0; }
+.one   { background: #3498db; fill: #3498db; }
+.two   { background: #2ecc71; fill: #2ecc71; }
+.three { background: #f1c40f; fill: #f1c40f; }
+.four  { background: #e74c3c; fill: #e74c3c; }
+.five  { background: #9b59b6; fill: #9b59b6; }
 
 
-
-
-#Wakayama {
-	fill: #65ace4;
-}
-
-#Kyoto {
-	fill: #9460a0;
-}
-
-#Osaka {
-	fill: #a0c238;
-}
-
-#Shiga {
-	fill: #cc528b;
-}
-
-#Nara {
-	fill: #fff001;
-}
-#Okinawa {
-	fill: #9460a0;
-}
 
 
 /* info button */
@@ -156,7 +157,7 @@ body {
 
 #info-button a {
 	font-size: 200%;
-	color: #666;
+	color: #7f8c8d;
 	text-decoration: none;
 }
 

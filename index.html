@@ -27,26 +27,8 @@
 
 	<div id="offcanvas" class="uk-offcanvas">
 		<div class="uk-offcanvas-bar uk-offcanvas-bar-flip" id="offcanvas-main">
-			<table id="prefectures">		
-				<tr>
-					<th class="name">京都府</th>
-					<td class="zero"></td>
-					<td class="one"></td>
-					<td class="two"></td>
-					<td class="three select"></td>
-					<td class="four"></td>
-					<td class="five"></td>
-				</tr>
-				<tr>
-					<th class="name" >和歌山県</th>
-					<td class="zero select"></td>
-					<td class="one"></td>
-					<td class="two"></td>
-					<td class="three"></td>
-					<td class="four"></td>
-					<td class="five"></td>
-				</tr>
-			</table>
+			<div id="reset">Reset</div>
+			<table id="prefectures"></table>
 		</div>
 	</div>
 
@@ -72,7 +54,8 @@
 
 	<script>
 	$(function(){
-		var width = $("#map").width(),
+		var pref = prefData(),
+			width = $("#map").width(),
 			height = $("#map").height(),
 			scale = 1000 * Math.min(width/320, height/450),
 			centered;
@@ -101,8 +84,9 @@
 
 
 		var path = d3.geo.path()
-		.projection(projection);
+			.projection(projection);
 
+		// 地図描画
 		d3.json("japan.json", function(error, japan) {
 			g.selectAll("path")
 			.data(topojson.object(japan, japan.objects.japan).geometries)
@@ -113,7 +97,10 @@
 			.on("click", click);
 		});
 
-		//clickされたpathにfocus
+		createPrefecturesTable();
+
+
+		// clickされたpathにfocus
 		function click(d) {
 			var x, y, k;
 
@@ -123,7 +110,7 @@
 				y = centroid[1];
 				k = 3;
 				centered = d;
-				$("#japan").append( $("#" + d.id).remove() );
+				$("#japan").append( $("path#" + d.id).remove() );
 			}else{
 				x = width / 2;
 				y = height / 2;
@@ -163,7 +150,7 @@
 			var prefID = g.select(".active").attr("id");
 
 			var boxes = [
-				{ x:0, 	y:20, class: "zero select" },  
+				{ x:0, 	y:20, class: "zero" },  
 				{ x:10, y:20, class: "one" },
 				{ x:20, y:20, class: "two" },
 				{ x:30, y:20, class: "three" },
@@ -179,15 +166,18 @@
 						x: boxes[i].x,
 						y: boxes[i].y,
 						class: boxes[i].class,
-						pref: prefID
 					})
 					.on("click", function(d){
 						d3.selectAll("#popup rect").classed("select", false);
+						d3.select("path#" + prefID).attr("class", d3.select(this).attr("class") + " active");
 						d3.select(this).classed("select", true);
-						d3.select("#" + prefID).attr("class", d3.select(this).attr("class") + " active");
 						pref[prefID].value = 3;
 					});
 			}
+
+
+			var prefClass = g.select(".active").attr("class").replace(" active", "");
+			d3.select("#popup ." + prefClass).classed("select", true);
 
 			popup.append("text")
 				.text( pref[ prefID ].name )
@@ -199,61 +189,96 @@
 					fill: "#555"
 				});
 
+			var minusY = (prefID == "Hokkaido") ? 15 : 30;
 			popup.attr({
-				transform: "translate(" + (x-30) + "," + (y-30) + ")"
+				transform: "translate(" + (x-30) + "," + (y-minusY) + ")"
 			});
+		}
+
+		
+		function createPrefecturesTable(){
+			var prefArray = new Array(47);
+
+			for ( key in pref ){
+				prefArray[ pref[key].code - 1 ] = {
+					id: key,
+					name: pref[key].name
+				};
+			}
+
+			var prefTable = d3.select("#prefectures");
+
+			for (var i = 0; i < 47; i++ ){
+				var p = prefArray[i];
+
+				$("#prefectures").append(
+					'<tr id="' + p.id  + '">' +
+						'<th class="name">' + p.name + '</th>' +
+						'<td class="zero"></td>' +
+						'<td class="one"></td>' +
+						'<td class="two"></td>' +
+						'<td class="three"></td>' +
+						'<td class="four"></td>' +
+						'<td class="five"></td>' +
+					'</tr>'
+
+				);
+			}
+
 		}
 
 
 
-		var pref = {
-			Hokkaido:  { code:  1, name: "北海道"   },
-			Aomori:    { code:  2, name: "青森県"   },
-			Iwate:     { code:  3, name: "岩手県"   },
-			Miyagi:    { code:  4, name: "宮城県"   },
-			Akita:     { code:  5, name: "秋田県"   },
-			Yamagata:  { code:  6, name: "山形県"   },
-			Fukushima: { code:  7, name: "福島県"   },
-			Ibaragi:   { code:  8, name: "茨城県"   },
-			Tochigi:   { code:  9, name: "栃木県"   },
-			Gunma:     { code: 10, name: "群馬県"   },
-			Saitama:   { code: 11, name: "埼玉県"   },
-			Chiba:     { code: 12, name: "千葉県"   },
-			Tokyo:     { code: 13, name: "東京都"   },
-			Kanagawa:  { code: 14, name: "神奈川県" },
-			Nigata:    { code: 15, name: "新潟県"   },
-			Toyama:    { code: 16, name: "富山県"   },
-			Ishikawa:  { code: 17, name: "石川県"   },
-			Fukui:     { code: 18, name: "福井県"   },
-			Yamanashi: { code: 19, name: "山梨県"   },
-			Nagano:    { code: 20, name: "長野県"   },
-			Gifu:      { code: 21, name: "岐阜県"   },
-			Shizuoka:  { code: 22, name: "静岡県"   },
-			Aichi:     { code: 23, name: "愛知県"   },
-			Mie:       { code: 24, name: "三重県"   },
-			Shiga:     { code: 25, name: "滋賀県"   },
-			Kyoto:     { code: 26, name: "京都府"   },
-			Osaka:     { code: 27, name: "大阪府"   },
-			Hyogo:     { code: 28, name: "兵庫県"   },
-			Nara:      { code: 29, name: "奈良県"   },
-			Wakayama:  { code: 30, name: "和歌山県" },
-			Tottori:   { code: 31, name: "鳥取県"   },
-			Shimane:   { code: 32, name: "島根県"   },
-			Okayama:   { code: 33, name: "岡山県"   },
-			Hiroshima: { code: 34, name: "広島県"   },
-			Yamaguchi: { code: 35, name: "山口県"   },
-			Tokushima: { code: 36, name: "徳島県"   },
-			Kagawa:    { code: 37, name: "香川県"   },
-			Ehime:     { code: 38, name: "愛媛県"   },
-			Kochi:     { code: 39, name: "高知県"   },
-			Fukuoka:   { code: 40, name: "福岡県"   },
-			Saga:      { code: 41, name: "佐賀県"   },
-			Nagasaki:  { code: 42, name: "長崎県"   },
-			Kumamoto:  { code: 43, name: "熊本県"   },
-			Oita:      { code: 44, name: "大分県"   },
-			Miyazaki:  { code: 45, name: "宮崎県"   },
-			Kagoshima: { code: 46, name: "鹿児島県" },
-			Okinawa:   { code: 47, name: "沖縄県"   }
+		function prefData() {
+			return {
+				Hokkaido:  { code:  1, name: "北海道"   },
+				Aomori:    { code:  2, name: "青森県"   },
+				Iwate:     { code:  3, name: "岩手県"   },
+				Miyagi:    { code:  4, name: "宮城県"   },
+				Akita:     { code:  5, name: "秋田県"   },
+				Yamagata:  { code:  6, name: "山形県"   },
+				Fukushima: { code:  7, name: "福島県"   },
+				Ibaragi:   { code:  8, name: "茨城県"   },
+				Tochigi:   { code:  9, name: "栃木県"   },
+				Gunma:     { code: 10, name: "群馬県"   },
+				Saitama:   { code: 11, name: "埼玉県"   },
+				Chiba:     { code: 12, name: "千葉県"   },
+				Tokyo:     { code: 13, name: "東京都"   },
+				Kanagawa:  { code: 14, name: "神奈川県" },
+				Nigata:    { code: 15, name: "新潟県"   },
+				Toyama:    { code: 16, name: "富山県"   },
+				Ishikawa:  { code: 17, name: "石川県"   },
+				Fukui:     { code: 18, name: "福井県"   },
+				Yamanashi: { code: 19, name: "山梨県"   },
+				Nagano:    { code: 20, name: "長野県"   },
+				Gifu:      { code: 21, name: "岐阜県"   },
+				Shizuoka:  { code: 22, name: "静岡県"   },
+				Aichi:     { code: 23, name: "愛知県"   },
+				Mie:       { code: 24, name: "三重県"   },
+				Shiga:     { code: 25, name: "滋賀県"   },
+				Kyoto:     { code: 26, name: "京都府"   },
+				Osaka:     { code: 27, name: "大阪府"   },
+				Hyogo:     { code: 28, name: "兵庫県"   },
+				Nara:      { code: 29, name: "奈良県"   },
+				Wakayama:  { code: 30, name: "和歌山県" },
+				Tottori:   { code: 31, name: "鳥取県"   },
+				Shimane:   { code: 32, name: "島根県"   },
+				Okayama:   { code: 33, name: "岡山県"   },
+				Hiroshima: { code: 34, name: "広島県"   },
+				Yamaguchi: { code: 35, name: "山口県"   },
+				Tokushima: { code: 36, name: "徳島県"   },
+				Kagawa:    { code: 37, name: "香川県"   },
+				Ehime:     { code: 38, name: "愛媛県"   },
+				Kochi:     { code: 39, name: "高知県"   },
+				Fukuoka:   { code: 40, name: "福岡県"   },
+				Saga:      { code: 41, name: "佐賀県"   },
+				Nagasaki:  { code: 42, name: "長崎県"   },
+				Kumamoto:  { code: 43, name: "熊本県"   },
+				Oita:      { code: 44, name: "大分県"   },
+				Miyazaki:  { code: 45, name: "宮崎県"   },
+				Kagoshima: { code: 46, name: "鹿児島県" },
+				Okinawa:   { code: 47, name: "沖縄県"   }
+			};
 		}
 
 
