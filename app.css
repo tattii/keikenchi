@@ -75,6 +75,10 @@ body {
 	text-shadow: none;
 }
 
+#offcanvas-main {
+	background: #fff;
+}
+
 
 /* prefecture table */
 #prefectures {
@@ -83,15 +87,16 @@ body {
 
 #prefectures tr {
 	height: 45px;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #ccc;
 }
 
 #prefectures .name {
 	width: 150px;
 	padding-left: 10px;
-	color: #ccc;
+	color: #000;
 	font-weight: normal;
 	text-align: left;
+	opacity: 0.8;
 }
 
 
@@ -101,7 +106,7 @@ body {
 }
 
 #prefectures td:hover, #prefectures td.select {
-	opacity: 1.0;
+	opacity: 0.8;
 }
 
 
@@ -159,7 +164,7 @@ body {
 
 /* popup */
 #popup rect {
-	opacity: 0.6;
+	opacity: 0.4;
 }
 
 #popup rect:hover, #popup rect.select {
